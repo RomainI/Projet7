@@ -1,20 +1,33 @@
 package com.openclassrooms.arista.data.repository
 
-import com.openclassrooms.arista.data.FakeApiService
+import com.openclassrooms.arista.database.dao.ExerciseDtoDao
 import com.openclassrooms.arista.domain.model.Exercise
+import kotlinx.coroutines.flow.first
 
-class ExerciseRepository(private val apiService: FakeApiService = FakeApiService()) {
+class ExerciseRepository(private val exerciseDtoDao: ExerciseDtoDao) {
+
 
     // Get all exercises
-    val allExercises: List<Exercise> get() = apiService.getAllExercises()
-
-    // Add a new exercise
-    fun addExercise(exercise: Exercise) {
-        apiService.addExercise(exercise)
+    suspend fun getAllExercises(): List<Exercise> {
+        return exerciseDtoDao.getAllExercises().first().map {
+            Exercise.fromDto(it)
+        } // Convert every DTO in Exercise
     }
 
+
+    // Add a new exercise
+    suspend fun addExercise(exercise: Exercise) {
+        exerciseDtoDao.insertExercise(exercise.toDto())
+    }
+
+
     // Delete an exercise
-    fun deleteExercise(exercise: Exercise) {
-        apiService.deleteExercise(exercise)
+    suspend fun deleteExercise(exercise: Exercise) {
+        // If there is no id, you can raise an exception and catch it in the use case and viewmodel
+        exercise.id?.let {
+            exerciseDtoDao.deleteExerciseById(
+                id = exercise.id,
+            )
+        }?: throw IllegalArgumentException("Exercice object must have an ID to be deleted")
     }
 }

@@ -5,7 +5,11 @@ import com.openclassrooms.arista.domain.model.User
 import javax.inject.Inject
 
 class GetUserUsecase @Inject constructor(private val userRepository: UserRepository) {
-    fun execute(): User {
-        return userRepository.user
+    suspend fun execute(): User {
+        val users = userRepository.getAllUsers()
+        if(users.isEmpty()){
+            throw NoSuchElementException("user list empty")
+        }
+        return userRepository.getAllUsers().first()
     }
 }

@@ -9,9 +9,9 @@ import java.util.Arrays
 import java.util.Optional
 
 class FakeApiService {
-
+/**
     // Static data
-    var user: User = User("John Doe", "johndoe@example.com")
+    var user: User = User(1,"John Doe", "johndoe@example.com")
 
     private val sleepData = listOf(
         Sleep(LocalDateTime.now().minusDays(1), 7, 8),
@@ -52,5 +52,5 @@ class FakeApiService {
 
     fun deleteExercise(exercise: Exercise) {
         exerciseData.remove(exercise)
-    }
+    }*/
 }

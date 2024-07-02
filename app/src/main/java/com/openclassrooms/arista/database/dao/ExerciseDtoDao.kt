@@ -1,4 +1,4 @@
-package com.openclassrooms.arista.dao
+package com.openclassrooms.arista.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
