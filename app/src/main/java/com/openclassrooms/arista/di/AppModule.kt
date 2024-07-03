@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import javax.inject.Singleton
+/**
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
@@ -24,14 +25,14 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideAppDatabase(@ApplicationContext context: Context, coroutineScope: CoroutineScope): AppDatabase {
-        return AppDatabase.getDatabase(context, coroutineScope)
-    }
+    fun provideCoroutineScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
 
     @Provides
     @Singleton
-    fun provideCoroutineScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-
+    fun provideAppDatabase(@ApplicationContext context: Context, coroutineScope: CoroutineScope): AppDatabase {
+        return AppDatabase.getDatabase(context, coroutineScope)
+    }
 
 
     @Provides
@@ -69,6 +70,61 @@ class AppModule {
     @Provides
     @Singleton
     fun provideExerciseRepository(exerciseDtoDao: ExerciseDtoDao): ExerciseRepository {
+        return ExerciseRepository(exerciseDtoDao)
+    }
+}*/
+
+@Module
+@InstallIn(SingletonComponent::class)
+class AppModule {
+
+    @Provides
+    @Singleton
+    fun provideCoroutineScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
+    @Provides
+    @Singleton
+    fun provideAppDatabase(@ApplicationContext context: Context, coroutineScope: CoroutineScope): AppDatabase {
+        // Initialize the database first
+        return AppDatabase.getDatabase(context, coroutineScope)
+    }
+
+    @Provides
+    fun provideUserDao(appDatabase: AppDatabase): UserDtoDao {
+        // Ensure that UserDao is provided after the database is created
+        return appDatabase.userDtoDao()
+    }
+
+    @Provides
+    fun provideSleepDao(appDatabase: AppDatabase): SleepDtoDao {
+        // Ensure that SleepDao is provided after the database is created
+        return appDatabase.sleepDtoDao()
+    }
+
+    @Provides
+    fun provideExerciseDao(appDatabase: AppDatabase): ExerciseDtoDao {
+        // Ensure that ExerciseDao is provided after the database is created
+        return appDatabase.exerciseDtoDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(userDao: UserDtoDao): UserRepository {
+        // Ensure that UserRepository is provided after the UserDao is created
+        return UserRepository(userDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSleepRepository(sleepDtoDao: SleepDtoDao): SleepRepository {
+        // Ensure that SleepRepository is provided after the SleepDao is created
+        return SleepRepository(sleepDtoDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideExerciseRepository(exerciseDtoDao: ExerciseDtoDao): ExerciseRepository {
+        // Ensure that ExerciseRepository is provided after the ExerciseDao is created
         return ExerciseRepository(exerciseDtoDao)
     }
 }

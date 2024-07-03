@@ -31,25 +31,25 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun exerciseDtoDao(): ExerciseDtoDao
 
 
-    private class AppDatabaseCallback(
-        private val scope: CoroutineScope
-    ) : Callback() {
-        override fun onCreate(db: SupportSQLiteDatabase) {
-            super.onCreate(db)
-            INSTANCE?.let { database ->
-                scope.launch {
-                        populateDatabase(scope, database.sleepDtoDao(), database.userDtoDao())
-                }
-            }
-        }
-    }
+
 
 
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
-
+        private class AppDatabaseCallback(
+            private val scope: CoroutineScope
+        ) : Callback() {
+            override fun onCreate(db: SupportSQLiteDatabase) {
+                super.onCreate(db)
+                INSTANCE?.let { database ->
+                    scope.launch {
+                        populateDatabase(scope, database.sleepDtoDao(), database.userDtoDao())
+                    }
+                }
+            }
+        }
         fun getDatabase(context: Context, coroutineScope: CoroutineScope): AppDatabase {
             Log.d("AppDatabase", "getDatabase: ")
             return INSTANCE ?: synchronized(this) {
@@ -57,16 +57,14 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "AristaDB"
-                )
-                    .addCallback(AppDatabaseCallback(coroutineScope))
-                    .build()
+                ).addCallback(AppDatabaseCallback(coroutineScope)).build()
                 INSTANCE = instance
                 instance
             }
         }
 
 
-        suspend fun populateDatabase(scope: CoroutineScope, sleepDao: SleepDtoDao, userDtoDao: UserDtoDao) : Deferred<Unit> = scope.async {
+        suspend fun populateDatabase(scope: CoroutineScope, sleepDao: SleepDtoDao, userDtoDao: UserDtoDao)  {
             Log.d("AppDatabase", "populateDatabase: ")
             userDtoDao.insertUser(
                 UserDto(name = "bobby", email = "bob@gmail.com",password ="azerty")
