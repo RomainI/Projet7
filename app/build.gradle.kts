@@ -35,12 +35,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
     buildFeatures {
         viewBinding = true
     }
+
 }
 
 dependencies {
@@ -63,6 +65,11 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    // Test libraries
+    testImplementation ("org.junit.jupiter:junit-jupiter-api:5.8.2")
+    testRuntimeOnly ("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+    testImplementation ("org.junit.vintage:junit-vintage-engine:5.8.2")
+
     //Room
 
     val room_version = "2.6.0"
@@ -71,6 +78,10 @@ dependencies {
     implementation("androidx.room:room-ktx:$room_version")
     //noinspection KaptUsageInsteadOfKsp
     kapt("androidx.room:room-compiler:$room_version")
+
+    //TESTS
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
 }
 kapt {
     correctErrorTypes = true

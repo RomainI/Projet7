@@ -3,17 +3,22 @@ package com.openclassrooms.arista.data.repository
 import com.openclassrooms.arista.database.dao.UserDtoDao
 import com.openclassrooms.arista.domain.model.Exercise
 import com.openclassrooms.arista.domain.model.User
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 
 class UserRepository(private val userDtoDao: UserDtoDao) {
 
 
     // Get all users
-    suspend fun getAllUsers(): List<User> {
-        return userDtoDao.getAllUsers().first().map {
-            User.fromDto(it)
-        } // Convert every DTO in Exercise
+    fun getAllUsers(): Flow<List<User>> {
+        return userDtoDao.getAllUsers().map { userList ->
+            userList.map { dto ->
+                User.fromDto(dto)
+            }
+        }
     }
 
 
